@@ -1,5 +1,13 @@
 参考：  
-https://www.cnblogs.com/codelove/p/10056866.html
+
+Dockerfile格式：  
+http://www.cnblogs.com/gupan/p/9022614.html  
+https://blog.csdn.net/yue530tomtom/article/details/82429433  
+
+包括：   
+FROM、MAINTAINER、RUN、ENV、COPY、ADD、EXPOSE、CMD、  
+ENTRYPORINT、VOLUME、USER、WORKDIR、ONBUILD、LABEL、  
+STOPSIGNAL、HEALTHCHECK、SHELL
 
 ---------------
 示例
@@ -7,6 +15,7 @@ https://www.cnblogs.com/codelove/p/10056866.html
 ```
 # docker file
 
+MAINTAINER zhuzhenyuan<zhenyuanzhu@outlook.com>
 FROM node:8.4
 COPY . /app
 WORKDIR /app
@@ -68,6 +77,7 @@ ADD 指令与 COPY 指令非常类似，但它包含更多功能。
 ADD<source> <destination>
 示例：
 ADD https://www.python.org/ftp/python/3.5.1/python-3.5.1.exe /temp/python-3.5.1.exe
+ADD Itaest.tar.gz /var/www/
 此示例会将 Python for Windows下载到容器映像的 c:\temp 目录。
 
 5.WORKDIR
@@ -112,11 +122,25 @@ ENV VERSION=1.0 DEBUG=on \
 NAME="Magicodes"
 
 9.EXPOSE
-EXPOSE用来指定端口，使容器内的应用可以通过端口和外界交互。
+EXPOSE用来指定端口，使容器内的应用可以通过端口和外界交互。（可以写多个）
 格式：
 EXPOSE
 示例：
 EXPOSE 80
+
+10. MAINTAINER
+设置维护者信息
+格式：
+MAINTAINER Name <Email>
+
+11. VOLUME
+基于镜像创建容器添加数据卷，即在容器中设置一个挂载点，
+可以让其他容器挂载或让宿主机访问，
+以实现数据共享或对容器数据的备份、恢复或迁移
+格式：
+VOLUME ["/data", "/data2"]
+VOLUME /data
+
 
 转义字符
 在许多情况下，Dockerfile 指令需要跨多个行；这可通过转义字符完成。

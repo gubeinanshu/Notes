@@ -12,6 +12,11 @@ https://blog.csdn.net/itguangit/article/details/80246071
 kj
 
 ```
+# 指定第三方（本地）镜像服务
+docker pull/push时
+参考： https://my.oschina.net/u/3746745/blog/1811571
+
+
 # 查找image
 sudo docker search ubuntu
 # 说明 查找镜像Docker Hub 网址为： https://hub.docker.com/
@@ -36,7 +41,9 @@ CREATED：镜像创建时间
 SIZE：镜像大小
 
 # 删除镜像
+docker rmi [imageName]
 docker image rm [imageName]
+
 
 # 更新镜像，可以通过命令 docker commit来提交容器副本
 docker commit -m="has update" -a="runoob" e218edb10161 runoob/ubuntu:v2
@@ -54,6 +61,9 @@ runoob/ubuntu:v2:指定要创建的目标镜像名
 也即是说,一旦容器生成,就会存在两个文件:一个image文件,一个容器文件.而且关闭容器并不会删除容器文件,只是容器停止运行而已
 
 ```
+# 回到主机，但是不想容器退出
+ctrl+p ctrl+q
+
 # 运行容器
 docker run httpd
 docker container run hello-world
@@ -121,7 +131,14 @@ docker ps -l
 docker exec command
 docker container exec command
 > 用于进行一个正在运行的容器.如果docker container run命令运行容器的时候,没有使用-it参数,就要使用这个命令进入进入容器,一旦进入容器,就可以在容器的shell执行命令了.
-> docker container exec [container_id] /bin/bash
+> docker container exec -it [container_id] /bin/bash
+
+# 从主机进入容器
+docker exec -it 7054aa92bf8e /bin/bash
+docker attach 7054aa92bf8e （回车）
+> 但在，使用attach该命令有一个问题。当多个窗口同时使用该命令进入该容器时，所有的窗口都会同步显示。
+> 如果有一个窗口阻塞了，那么其他窗口也无法再进行操作。
+> 因为这个原因，所以docker attach命令不太适合于生产环境，平时自己开发应用时可以使用该命令。
 
 # 从容器中复制文件
 docker cp
@@ -131,11 +148,12 @@ docker container cp
 ```
 
 
-运行web应用
+运行web应用（需要端口的例子）
 
 ```
 # 载入镜像
 docker pull training/webapp
+
 #运行
 docker run -d -P training/webapp python app.py
 -d:让容器在后台运行。
@@ -156,4 +174,29 @@ docker logs -f bf08b7f2cd89
 # 检查 WEB 应用程序
 使用 docker inspect 来查看 Docker 的底层信息。它会返回一个 JSON 文件记录着 Docker 容器的配置和状态信息。
 
+# Docker容器 暴露多个端口
+# 1、创建容器时指定
+docker run -p <host_port1>:<container_port1> -p <host_port2>:<container_port2>
+
+# 2、修改dockerfile expose所需要的端口，这样可以免去-p参数。
+
+# 按范围暴露指定端口
+EXPOSE 7000-8000
+# 或Docker run命令：
+docker run –expose = 7000-8000
+# 或者，您可以通过Docker run命令将一系列端口发布到主机：
+docker run -p 7000-8000:7000-8000
+
+# 指定端口随机映射到宿主机
+docker run -P 80 -it ubuntu /bin/bash
+
+# 将容器ip和端口，指定映射到宿主机上
+docker run -p 192.168.0.100:8000:80 -it ubuntu /bin/bash
+
+
+# 端口映射支持的格式
+# 参考： https://www.jianshu.com/p/b92d4b845ed6
+ip:hostport:containerport #指定ip、指定宿主机port、指定容器port
+ip::containerport #指定ip、未指定宿主机port（随机）、指定容器port
+hostport:containerport #未指定ip、指定宿主机port、指定容器port
 ```

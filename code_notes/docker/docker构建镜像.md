@@ -7,7 +7,17 @@
 
 > 从容器构建image
 
-1. 先对已经运行的容器进行一些修改，例如 apt update，更新一下软件包
+1. 先对已经运行的(存在)容器进行一些修改，例如 apt update，更新一下软件包
+
+```
+docker run -i -t ubuntu:14.04 /bin/bash
+apt update && apt install -y vim
+# 重新进入容器
+# docker container exec -it 7054aa92bf8e /bin/bash
+# docker attact 7054aa92bf8e
+```
+
+
 2. commit命令用来将容器转化为镜像，运行下面的命令，我们可以讲刚刚的容器转换为镜像:
 
 ```
@@ -27,19 +37,19 @@ saymagic/ubuntu-nginx:v1: 指定目标镜像的用户名、仓库名和tag信息
 1. 进入一个目录，新建目录 www,在其中添加index.html文件
 
 
-2. 编写dickerfile文件
+2. 编写Dockerfile文件
 ```
+# filename: Dockerfile
 FROM ubuntu:14.04
-MAINTAINER zhuzhenyuan zhenyuanzhu@outlook.com
-RUN apt-get update
-RUN apt-get install -y nginx
+MAINTAINER zhuzhenyuan<zhenyuanzhu@outlook.com>
+RUN apt-get update && apt-get install -y nginx
 COPY ./www /usr/share/nginx/html
 EXPOSE 80
 CMD ["nginx", "-g", "daemon off;"]
 
 # 说明
 第一行是用来声明我们的镜像是基于什么构建的，这里我们指定为ubuntu14.04 
-第二行的作用在于告诉别人你的大名。
+第二行的作用在于说明维护者。
 第三行和第四行的RUN命令用来在容器内部的shell里执行命令。
 第五行将当前系统的www文件夹拷贝到容器的/usr/share/nginx/html目录下
 第六行声明当前需要对外开放80端口
@@ -59,10 +69,10 @@ docker 容器默认会把容器内部第一个进程，也就是pid=1的程序�
 # docker image build
 
 示例
-docker build -t saymagic/ubuntu-nginx:v2 .
-docker build -t="saymagic/ubuntu-nginx:v2" .
-docker image build -t koa-demo .
-docker image build -t koa-demo:0.0.1 .
+docker build -t zhuzhenyuan/ubuntu:test.0.0.2 .
+docker build -t="zhuzhenyuan/ubuntu:test.0.0.2" .
+docker image build -t ubuntu .
+docker image build -t ubuntu:test.0.0.2 .
 
 # 注意，最后的.表示Dockerfile在当前目录，也可指定其它目录。
 # 此时，再次运行docker images就会看到刚刚生成的镜像
@@ -72,9 +82,13 @@ docker image build -t koa-demo:0.0.1 .
 
 生成容器
 ```
-$ docker container run -p 8000:3000 -it koa-demo /bin/bash
+# 上面的例子运行
+docker run -p 8000:80 -d zhuzhenyuan/ubuntu:test.0.0.2
+
+#其他
+docker container run -p 8000:80 -it zhuzhenyuan/ubuntu:test.0.0.2 /bin/bash
 # 或者
-$ docker container run -p 8000:3000 -it koa-demo:0.0.1 /bin/bash
+docker container run -p 8000:80 -it zhuzhenyuan/ubuntu:test.0.0.2 /bin/bash
 ```
 
 
